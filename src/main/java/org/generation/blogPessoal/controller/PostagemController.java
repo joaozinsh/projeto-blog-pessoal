@@ -1,10 +1,14 @@
 package org.generation.blogPessoal.controller;
 
 import java.util.List;
+import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.generation.blogPessoal.model.Postagem;
+import org.generation.blogPessoal.model.Tema;
 import org.generation.blogPessoal.repository.PostagemRepository;
-import org.generation.blogPessoal.service.PostagemService;
+import org.generation.blogPessoal.repository.TemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,9 +28,9 @@ public class PostagemController {
 
 	// Injeção das dependências para ações com o banco de dados
 	@Autowired
-	private PostagemRepository repository;
+	private PostagemRepository repositoryPostagem;
 	@Autowired
-	private PostagemService service;
+	private TemaRepository repositoryTema;
 
 	/*
 	 * Busca todas as postagens armazenadas no banco de dados. Exemplo da url:
@@ -34,7 +38,7 @@ public class PostagemController {
 	 */
 	@GetMapping
 	public ResponseEntity<List<Postagem>> getAll() {
-		List<Postagem> listaDePostagem = repository.findAll();
+		List<Postagem> listaDePostagem = repositoryPostagem.findAll();
 		if (listaDePostagem.isEmpty()) {
 			return ResponseEntity.status(204).build();
 		} else {
@@ -48,7 +52,7 @@ public class PostagemController {
 	 */
 	@GetMapping(params = "id")
 	public ResponseEntity<Postagem> getById(@RequestParam long id) {
-		return repository.findById(id).map(resp -> ResponseEntity.status(200).body(resp))
+		return repositoryPostagem.findById(id).map(resp -> ResponseEntity.status(200).body(resp))
 				.orElse(ResponseEntity.status(404).build());
 	}
 
@@ -58,7 +62,7 @@ public class PostagemController {
 	 */
 	@GetMapping(params = "titulo")
 	public ResponseEntity<List<Postagem>> getByTitulo(@RequestParam String titulo) {
-		List<Postagem> listaPorTitulo = repository.findAllByTituloContainingIgnoreCase(titulo);
+		List<Postagem> listaPorTitulo = repositoryPostagem.findAllByTituloContainingIgnoreCase(titulo);
 		if (listaPorTitulo.isEmpty()) {
 			return ResponseEntity.status(404).build();
 		} else {
@@ -70,9 +74,14 @@ public class PostagemController {
 	 * Adiciona valores no banco de dados atraves dos valores obtidos do body
 	 */
 	@PostMapping
-	public ResponseEntity<Postagem> postPostagem(@RequestBody Postagem postagem) {
-		return service.checkPostagem(postagem).map(resp -> ResponseEntity.status(201).body(resp))
-				.orElse(ResponseEntity.status(400).build());
+	public ResponseEntity<Postagem> postPostagem(@Valid @RequestBody Postagem postagem) {
+		Optional<Tema> temaExiste = repositoryTema.findById(postagem.getTema().getId());
+		if (temaExiste.isPresent()) {
+			return ResponseEntity.status(201).body(repositoryPostagem.save(postagem));
+		} else {
+			return ResponseEntity.status(404).build();
+		}
+		
 	}
 
 	/*
@@ -80,7 +89,13 @@ public class PostagemController {
 	 */
 	@PutMapping
 	public ResponseEntity<Postagem> putPostagem(@RequestBody Postagem postagem) {
-		return ResponseEntity.status(200).body(repository.save(postagem));
+		Optional<Postagem> idPostagemExiste = repositoryPostagem.findById(postagem.getId());
+		Optional<Tema> temaExiste = repositoryTema.findById(postagem.getTema().getId());
+		if (idPostagemExiste.isPresent() && temaExiste.isPresent()) {
+			return ResponseEntity.status(201).body(repositoryPostagem.save(postagem));
+		} else {
+			return ResponseEntity.status(404).build();
+		}
 	}
 
 	/*
@@ -88,8 +103,13 @@ public class PostagemController {
 	 * da url: localhost:8080/postagens?id=1
 	 */
 	@DeleteMapping(params = "id")
-	public void deletePostagem(@RequestParam long id) {
-		repository.deleteById(id);
+	public ResponseEntity<Object> deletePostagem(@RequestParam long id) {
+		if (repositoryPostagem.findById(id).isPresent()) {
+			repositoryPostagem.deleteById(id);
+		} else {
+			return ResponseEntity.status(404).build();
+		}
+		return null;
 	}
 
 }

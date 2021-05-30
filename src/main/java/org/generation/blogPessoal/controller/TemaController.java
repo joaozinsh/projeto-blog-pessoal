@@ -2,6 +2,8 @@ package org.generation.blogPessoal.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.generation.blogPessoal.model.Tema;
 import org.generation.blogPessoal.repository.TemaRepository;
 import org.generation.blogPessoal.service.TemaService;
@@ -47,7 +49,7 @@ public class TemaController {
 	 * localhost:8080/temas?id=1
 	 */
 	@GetMapping(params = "id")
-	public ResponseEntity<Tema> getById(@RequestParam long id) {
+	public ResponseEntity<Tema> getById(@Valid @RequestParam long id) {
 		return repository.findById(id).map(resp -> ResponseEntity.status(200).body(resp))
 				.orElse(ResponseEntity.status(204).build());
 	}
@@ -57,17 +59,20 @@ public class TemaController {
 	 * url: localhost:8080/temas?descricao=1
 	 */
 	@GetMapping(params = "descricao")
-	public ResponseEntity<Tema> getByDescricao(@RequestParam String descricao) {
-		return repository.findByDescricaoContainingIgnoreCase(descricao)
-				.map(listaPorDescricao -> ResponseEntity.status(200).body(listaPorDescricao))
-				.orElse(ResponseEntity.status(204).build());
+	public ResponseEntity<List<Tema>> getByDescricao(@RequestParam String descricao) {
+		List<Tema> listaPorDescricao = repository.findAllByDescricaoContainingIgnoreCase(descricao);
+		if (listaPorDescricao.isEmpty()) {
+			return ResponseEntity.status(204).build();
+		} else {
+			return ResponseEntity.status(200).body(listaPorDescricao);
+		}
 	}
 
 	/*
 	 * Adiciona valores no banco de dados atraves dos valores obtidos do body
 	 */
 	@PostMapping
-	public ResponseEntity<Tema> postTema(@RequestBody Tema tema) {
+	public ResponseEntity<Tema> postTema(@Valid @RequestBody Tema tema) {
 		return service.cadastrarTema(tema).map(resp -> ResponseEntity.status(201).body(resp))
 				.orElse(ResponseEntity.status(400).build());
 	}
@@ -86,8 +91,14 @@ public class TemaController {
 	 * url: localhost:8080/temas?id=1
 	 */
 	@DeleteMapping(params = "id")
-	public void deleteTema(@RequestParam long id) {
-		repository.deleteById(id);
+	public ResponseEntity<Object> deletePostagem(@RequestParam long id) {
+		if (repository.findById(id).isPresent()) {
+			repository.deleteById(id);
+		} else {
+			return ResponseEntity.status(404).build();
+		}
+		return null;
 	}
+
 
 }
