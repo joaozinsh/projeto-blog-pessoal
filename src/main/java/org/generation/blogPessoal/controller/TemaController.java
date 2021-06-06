@@ -5,7 +5,6 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.generation.blogPessoal.model.Tema;
-import org.generation.blogPessoal.repository.TemaRepository;
 import org.generation.blogPessoal.service.TemaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,81 +23,37 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class TemaController {
 
-	// Injeção das dependências para ações com o banco de dados
 	@Autowired
-	private TemaRepository repository;
-	@Autowired
-	private TemaService service;
+	private TemaService temaService;
 
-	/*
-	 * Busca todos os temas armazenados no banco de dados. Exemplo da
-	 * url:localhost:8080/temas
-	 */
+
 	@GetMapping
 	public ResponseEntity<List<Tema>> getAll() {
-		List<Tema> listaDeTema = repository.findAll();
-		if (listaDeTema.isEmpty()) {
-			return ResponseEntity.status(204).build();
-		} else {
-			return ResponseEntity.status(200).body(listaDeTema);
-		}
+		return temaService.findAll();
 	}
 
-	/*
-	 * Busca valores do banco de dados correspondente com o ID. Exemplo da url:
-	 * localhost:8080/temas?id=1
-	 */
 	@GetMapping(params = "id")
-	public ResponseEntity<Tema> getById(@Valid @RequestParam long id) {
-		return repository.findById(id).map(resp -> ResponseEntity.status(200).body(resp))
-				.orElse(ResponseEntity.status(204).build());
+	public ResponseEntity<Tema> getById(@Valid @RequestParam Long id) {
+		return temaService.findById(id);
 	}
 
-	/*
-	 * Busca valores do banco de dados correspondente com a descricao. Exemplo da
-	 * url: localhost:8080/temas?descricao=1
-	 */
 	@GetMapping(params = "descricao")
 	public ResponseEntity<List<Tema>> getByDescricao(@RequestParam String descricao) {
-		List<Tema> listaPorDescricao = repository.findAllByDescricaoContainingIgnoreCase(descricao);
-		if (listaPorDescricao.isEmpty()) {
-			return ResponseEntity.status(204).build();
-		} else {
-			return ResponseEntity.status(200).body(listaPorDescricao);
-		}
+		return temaService.findByDescricao(descricao);
 	}
 
-	/*
-	 * Adiciona valores no banco de dados atraves dos valores obtidos do body
-	 */
 	@PostMapping
 	public ResponseEntity<Tema> postTema(@Valid @RequestBody Tema tema) {
-		return service.cadastrarTema(tema).map(resp -> ResponseEntity.status(201).body(resp))
-				.orElse(ResponseEntity.status(400).build());
+		return temaService.saveTema(tema);
 	}
 
-	/*
-	 * Atualiza valores no banco de dados atraves dos valores obtidos do body
-	 */
 	@PutMapping
-	public ResponseEntity<Tema> putTema(@RequestBody Tema tema) {
-		return service.cadastrarTema(tema).map(resp -> ResponseEntity.status(200).body(resp))
-				.orElse(ResponseEntity.status(400).build());
+	public ResponseEntity<Tema> putTema(@Valid @RequestBody Tema tema) {
+		return temaService.updateTema(tema);
 	}
 
-	/*
-	 * Deleta valores do banco de dados correspondente com ID do tema. Exemplo da
-	 * url: localhost:8080/temas?id=1
-	 */
 	@DeleteMapping(params = "id")
-	public ResponseEntity<Object> deletePostagem(@RequestParam long id) {
-		if (repository.findById(id).isPresent()) {
-			repository.deleteById(id);
-		} else {
-			return ResponseEntity.status(404).build();
-		}
-		return null;
+	public ResponseEntity<Tema> deleteTema(@RequestParam Long id) {
+		return temaService.deletePostagem(id);
 	}
-
-
 }
