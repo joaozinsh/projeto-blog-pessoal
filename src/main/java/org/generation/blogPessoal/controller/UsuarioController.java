@@ -1,6 +1,6 @@
 package org.generation.blogPessoal.controller;
 
-import java.util.Optional;
+import javax.validation.Valid;
 
 import org.generation.blogPessoal.model.UserLogin;
 import org.generation.blogPessoal.model.Usuario;
@@ -21,15 +21,14 @@ public class UsuarioController {
 	@Autowired
 	private UsuarioService usuarioService;
 
-	@PostMapping("/logar")
-	public ResponseEntity<UserLogin> autentication(@RequestBody Optional<UserLogin> user) {
-		return usuarioService.logar(user).map(resp -> ResponseEntity.status(200).body(resp))
-				.orElse(ResponseEntity.status(401).build());
+	@PostMapping("/login")
+	public ResponseEntity<UserLogin> loginUsuario(@Valid @RequestBody UserLogin user) {
+		return usuarioService.login(user);
 	}
 
 	@PostMapping("/cadastrar")
-	public ResponseEntity<Usuario> postUsuario(@RequestBody Usuario usuario) {
-		return ResponseEntity.status(201).body(usuarioService.cadastrarUsuario(usuario));
+	public ResponseEntity<Usuario> postUsuario(@Valid @RequestBody Usuario usuario) {
+		return usuarioService.saveUsuario(usuario);
 	}
 
 }

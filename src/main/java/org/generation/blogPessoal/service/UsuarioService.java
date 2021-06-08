@@ -8,6 +8,7 @@ import org.generation.blogPessoal.model.UserLogin;
 import org.generation.blogPessoal.model.Usuario;
 import org.generation.blogPessoal.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,29 +18,35 @@ public class UsuarioService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
-	public Usuario cadastrarUsuario(Usuario usuario) {
+	public ResponseEntity<Usuario> saveUsuario(Usuario novoUsuario) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		usuario.setSenha(encoder.encode(usuario.getSenha()));
-		return usuarioRepository.save(usuario);
+		Optional<Usuario> usuarioExistente = usuarioRepository.findByUsuario(novoUsuario.getUsuario());
+		
+		if (usuarioExistente.isEmpty()) {
+			novoUsuario.setSenha(encoder.encode(novoUsuario.getSenha()));
+			return ResponseEntity.status(201).body(novoUsuario);
+		} else {
+			return ResponseEntity.status(400).build();
+		}
 	}
 
-	public Optional<UserLogin> logar(Optional<UserLogin> user) {
+	public ResponseEntity<UserLogin> login(UserLogin user) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		Optional<Usuario> usuario = usuarioRepository.findByUsuario(user.get().getUsuario());
+		Optional<Usuario> usuario = usuarioRepository.findByUsuario(user.getUsuario());
 
 		if (usuario.isPresent()) {
-			if (encoder.matches(user.get().getSenha(), usuario.get().getSenha())) {
-				String auth = user.get().getUsuario() + ":" + user.get().getSenha();
+			if (encoder.matches(user.getSenha(), usuario.get().getSenha())) {
+				String auth = user.getUsuario() + ":" + user.getSenha();
 				byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")));
 				String authHeader = "Basic " + new String(encodedAuth);
 
-				user.get().setToken(authHeader);
-				user.get().setNome(usuario.get().getNome());
+				user.setToken(authHeader);
+				user.setNome(usuario.get().getNome());
 
-				return user;
+				return ResponseEntity.status(202).body(user);
 			}
 
 		}
-		return null;
+		return ResponseEntity.status(401).build();
 	}
 }
