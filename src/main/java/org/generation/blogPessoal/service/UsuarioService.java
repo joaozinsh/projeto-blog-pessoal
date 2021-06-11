@@ -1,6 +1,7 @@
 package org.generation.blogPessoal.service;
 
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
@@ -18,6 +19,25 @@ public class UsuarioService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
+	
+	/**
+	 * Metodo para buscar todos os usuarios
+	 * @return ResponseEntity com o status HTTP e uma lista de todos os usuarios
+	 */
+	public ResponseEntity<List<Usuario>> findAll() {
+		List<Usuario> listaDeUsuario = usuarioRepository.findAll();
+		if (listaDeUsuario.isEmpty()) {
+			return ResponseEntity.status(204).build();
+		} else {
+			return ResponseEntity.status(200).body(listaDeUsuario);
+		}
+	}
+	
+	/**
+	 * Metodo para salvar um usuario na base de dados encriptando a sua senha
+	 * @param novoUsuario
+	 * @return ResponseEntity com o status HTTP e o usuario criado
+	 */
 	public ResponseEntity<Usuario> saveUsuario(Usuario novoUsuario) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		Optional<Usuario> usuarioExistente = usuarioRepository.findByUsuario(novoUsuario.getUsuario());
@@ -30,6 +50,11 @@ public class UsuarioService {
 		}
 	}
 
+	/**
+	 * Metodo para fazer login
+	 * @param user
+	 * @return ResponseEntity com o status HTTP e o token de autenticação
+	 */
 	public ResponseEntity<UserLogin> login(UserLogin user) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		Optional<Usuario> usuario = usuarioRepository.findByUsuario(user.getUsuario());
