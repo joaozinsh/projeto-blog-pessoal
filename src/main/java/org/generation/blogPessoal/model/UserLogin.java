@@ -14,7 +14,16 @@ public class UserLogin {
 	
 	private String token;
 
-	
+	public UserLogin(String nome, @NotBlank String usuario, @NotBlank String senha, String token) {
+		this.nome = nome;
+		this.usuario = usuario;
+		this.senha = senha;
+		this.token = token;
+	}
+
+	public UserLogin() {
+	}
+
 	public String getNome() {
 		return nome;
 	}

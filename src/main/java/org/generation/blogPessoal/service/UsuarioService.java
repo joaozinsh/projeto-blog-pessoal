@@ -24,7 +24,7 @@ public class UsuarioService {
 		
 		if (usuarioExistente.isEmpty()) {
 			novoUsuario.setSenha(encoder.encode(novoUsuario.getSenha()));
-			return ResponseEntity.status(201).body(novoUsuario);
+			return ResponseEntity.status(201).body(usuarioRepository.save(novoUsuario));
 		} else {
 			return ResponseEntity.status(400).build();
 		}

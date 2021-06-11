@@ -42,6 +42,16 @@ public class Postagem {
 	@JsonIgnoreProperties("postagens")
 	private Tema tema;
 
+	public Postagem(@NotBlank @Size(min = 5, max = 100) String titulo, @NotBlank @Size(min = 5, max = 255) String texto,
+			@NotNull Tema tema) {
+		this.titulo = titulo;
+		this.texto = texto;
+		this.tema = tema;
+	}
+
+	public Postagem() {
+	}
+
 	public Long getId() {
 		return id;
 	}
