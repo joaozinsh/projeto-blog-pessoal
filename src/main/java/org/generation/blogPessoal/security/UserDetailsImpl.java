@@ -11,13 +11,12 @@ public class UserDetailsImpl implements UserDetails {
 
 	private String username;
 	private String password;
-	
-	
+
 	public UserDetailsImpl(Usuario user) {
 		this.username = user.getUsuario();
 		this.password = user.getSenha();
 	}
-	
+
 	public UserDetailsImpl() {
 	}
 
