@@ -1,2 +1,2 @@
-# projeto-blog-pessoal
-Blog pessoal desenvolvido com Spring Boot no bootcamp da Generation Brasil.
+# API Blog Pessoal
+API Blog Pessoal desenvolvido com Spring Boot no bootcamp da Generation Brasil.
