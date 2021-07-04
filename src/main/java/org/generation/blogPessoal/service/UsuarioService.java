@@ -77,4 +77,18 @@ public class UsuarioService {
 		}
 		return ResponseEntity.status(401).build();
 	}
+	
+	/**
+	 * Metodo para deletar um usuario caso ele exista no banco de dados
+	 * @param id
+	 * @return ResponseEntity com o status HTTP da requisição
+	 */
+	public ResponseEntity<Usuario> deleteUsuario(Long id) {	
+		if (usuarioRepository.existsById(id)) {
+			usuarioRepository.deleteById(id);
+		} else {
+			return ResponseEntity.status(404).build();
+		}
+		return null;
+	}
 }

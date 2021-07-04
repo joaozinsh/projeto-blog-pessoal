@@ -20,39 +20,39 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/postagens")
-@CrossOrigin("*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PostagemController {
 
 	@Autowired
 	private PostagemService postagemService;
 
 	
-	@GetMapping
+	@GetMapping("buscar-todos")
 	public ResponseEntity<List<Postagem>> getAll() {
 		return postagemService.findAll();
 	}
 
-	@GetMapping("/id")
+	@GetMapping("/buscar-id")
 	public ResponseEntity<Postagem> getById(@RequestParam Long id) {
 		return postagemService.findById(id);
 	}
 
-	@GetMapping(path = "/titulo", params = "titulo")
+	@GetMapping("/buscar-titulo")
 	public ResponseEntity<List<Postagem>> getByTitulo(@RequestParam String titulo) {
 		return postagemService.findByTitulo(titulo);
 	}
 
-	@PostMapping
+	@PostMapping("/cadastrar")
 	public ResponseEntity<Postagem> postPostagem(@Valid @RequestBody Postagem postagem) {
 		return postagemService.savePostagem(postagem);
 	}
 
-	@PutMapping
+	@PutMapping("/alterar")
 	public ResponseEntity<Postagem> putPostagem(@Valid @RequestBody Postagem postagem) {
 		return postagemService.updatePostagem(postagem);
 	}
 
-	@DeleteMapping(params = "id")
+	@DeleteMapping("/deletar")
 	public ResponseEntity<Postagem> deletePostagem(@RequestParam Long id) {
 		return postagemService.deletePostagem(id);
 	}

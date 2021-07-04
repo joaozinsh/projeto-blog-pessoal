@@ -27,33 +27,34 @@ public class TemaController {
 	private TemaService temaService;
 
 
-	@GetMapping
+	@GetMapping("buscar-todos")
 	public ResponseEntity<List<Tema>> getAll() {
 		return temaService.findAll();
 	}
 
-	@GetMapping(params = "id")
+	@GetMapping("/buscar-id")
 	public ResponseEntity<Tema> getById(@Valid @RequestParam Long id) {
 		return temaService.findById(id);
 	}
 
-	@GetMapping(params = "descricao")
+	@GetMapping("/buscar-descricao")
 	public ResponseEntity<List<Tema>> getByDescricao(@RequestParam String descricao) {
 		return temaService.findByDescricao(descricao);
 	}
 
-	@PostMapping
+	@PostMapping("/cadastrar")
 	public ResponseEntity<Tema> postTema(@Valid @RequestBody Tema tema) {
 		return temaService.saveTema(tema);
 	}
 
-	@PutMapping
+	@PutMapping("/alterar")
 	public ResponseEntity<Tema> putTema(@Valid @RequestBody Tema tema) {
 		return temaService.updateTema(tema);
 	}
 
-	@DeleteMapping(params = "id")
+	@DeleteMapping("/deletar")
 	public ResponseEntity<Tema> deleteTema(@RequestParam Long id) {
 		return temaService.deletePostagem(id);
 	}
+	
 }
