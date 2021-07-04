@@ -32,13 +32,12 @@ public class PostagemController {
 		return postagemService.findAll();
 	}
 
-	@GetMapping(params = "id")
+	@GetMapping("/id")
 	public ResponseEntity<Postagem> getById(@RequestParam Long id) {
 		return postagemService.findById(id);
 	}
 
-
-	@GetMapping(params = "titulo")
+	@GetMapping(path = "/titulo", params = "titulo")
 	public ResponseEntity<List<Postagem>> getByTitulo(@RequestParam String titulo) {
 		return postagemService.findByTitulo(titulo);
 	}
