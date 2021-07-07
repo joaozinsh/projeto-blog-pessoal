@@ -32,6 +32,11 @@ public class UsuarioController {
 		return usuarioService.findAll();
 	}
 	
+	@GetMapping("/buscar-id")
+	public ResponseEntity<Usuario> getById(@RequestParam Long id){
+		return usuarioService.findById(id);
+	}
+	
 	@PostMapping("/login")
 	public ResponseEntity<UserLogin> loginUsuario(@Valid @RequestBody UserLogin user) {
 		return usuarioService.login(user);

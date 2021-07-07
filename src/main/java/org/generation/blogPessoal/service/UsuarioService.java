@@ -34,6 +34,16 @@ public class UsuarioService {
 	}
 	
 	/**
+	 * Metodo para buscar um usuario por ID
+	 * @param id
+	 * @return ResponseEntity com o status HTTP e o usuario
+	 */
+	public ResponseEntity<Usuario> findById(Long id) {
+		return usuarioRepository.findById(id).map(resp -> ResponseEntity.status(200).body(resp))
+				.orElse(ResponseEntity.status(404).build());
+	}
+	
+	/**
 	 * Metodo para salvar um usuario na base de dados encriptando a sua senha
 	 * @param novoUsuario
 	 * @return ResponseEntity com o status HTTP e o usuario criado
