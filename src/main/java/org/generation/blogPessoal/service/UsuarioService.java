@@ -59,6 +59,28 @@ public class UsuarioService {
 			return ResponseEntity.status(400).build();
 		}
 	}
+	
+	/**
+	 * Metodo para alterar um usuario na base de dados encriptando a sua senha
+	 * @param novoUsuario
+	 * @return ResponseEntity com o status HTTP e o usuario alterado
+	 */
+	public ResponseEntity<Usuario> updateUsuario(Usuario altUsuario) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		Optional<Usuario> usuarioAtual = usuarioRepository.findById(altUsuario.getId());
+		Optional<Usuario> usuarioExiste = usuarioRepository.findByUsuario(altUsuario.getUsuario());
+		
+		
+		if (altUsuario.getUsuario().equals(usuarioAtual.get().getUsuario())) {
+			altUsuario.setSenha(encoder.encode(altUsuario.getSenha()));
+			return ResponseEntity.status(200).body(usuarioRepository.save(altUsuario));
+			
+		} else if (altUsuario.getUsuario().equals(usuarioExiste.get().getUsuario())) {
+			return ResponseEntity.status(400).build();
+		}
+		
+		return null;
+	}
 
 	/**
 	 * Metodo para fazer login

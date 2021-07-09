@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,6 +46,11 @@ public class UsuarioController {
 	@PostMapping("/cadastrar")
 	public ResponseEntity<Usuario> postUsuario(@Valid @RequestBody Usuario usuario) {
 		return usuarioService.saveUsuario(usuario);
+	}
+	
+	@PutMapping("/alterar")
+	public ResponseEntity<Usuario> putUsuario(@Valid @RequestBody Usuario usuario){
+		return usuarioService.updateUsuario(usuario);
 	}
 	
 	@DeleteMapping("/deletar")
